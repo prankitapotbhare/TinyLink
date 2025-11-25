@@ -9,17 +9,18 @@
 npx create-next-app@latest tinylink
 
 # When prompted, select:
-# ✓ TypeScript? → Yes (recommended) or No
+# ✓ TypeScript? → Yes
 # ✓ ESLint? → Yes
 # ✓ Tailwind CSS? → Yes
-# ✓ src/ directory? → No
+# ✓ src/ directory? → Yes
 # ✓ App Router? → Yes
-# ✓ Customize default import alias? → No
+# ✓ Customize default import alias? → No (@/ is default)
 
 cd tinylink
 
-# Install PostgreSQL client
+# Install PostgreSQL client and types
 npm install pg
+npm install -D @types/pg
 ```
 
 ---
@@ -77,49 +78,59 @@ NODE_ENV=production
 
 ```
 tinylink/
-├── app/
-│   ├── api/
-│   │   ├── links/
-│   │   │   ├── route.js          # GET, POST /api/links
+├── src/
+│   ├── app/
+│   │   ├── api/
+│   │   │   ├── links/
+│   │   │   │   ├── route.ts          # GET, POST /api/links
+│   │   │   │   └── [code]/
+│   │   │   │       └── route.ts      # GET, DELETE /api/links/:code
+│   │   │   └── healthz/
+│   │   │       └── route.ts          # GET /healthz
+│   │   ├── code/
 │   │   │   └── [code]/
-│   │   │       └── route.js      # GET, DELETE /api/links/:code
-│   │   └── healthz/
-│   │       └── route.js          # GET /healthz
-│   ├── code/
-│   │   └── [code]/
-│   │       └── page.js           # Stats page for /:code
-│   ├── [code]/
-│   │   └── route.js              # Redirect handler GET /:code
-│   ├── page.js                   # Dashboard (homepage)
-│   ├── layout.js                 # Root layout
-│   └── globals.css               # Global styles with Tailwind
-├── components/
-│   ├── LinkForm.js               # Form to create links
-│   ├── LinksTable.js             # Table to display all links
-│   ├── Header.js                 # Navigation header with theme toggle
-│   ├── ThemeProvider.js          # Theme context provider
-│   ├── ThemeToggle.js            # Dark/light mode toggle button
-│   ├── AmbientBackground.js      # Glassmorphism background blobs
-│   └── Logo.js                   # App logo component
-├── lib/
-│   ├── db.js                     # Database connection pool
-│   └── utils.js                  # Helper functions
-├── .env.local                    # Local environment variables
-├── .env.example                  # Example environment variables
+│   │   │       └── page.tsx          # Stats page for /code/:code
+│   │   ├── [code]/
+│   │   │   └── route.ts              # Redirect handler GET /:code
+│   │   ├── page.tsx                  # Dashboard (homepage)
+│   │   ├── layout.tsx                # Root layout
+│   │   ├── globals.css               # Global styles with Tailwind
+│   │   └── favicon.ico               # App icon
+│   ├── components/
+│   │   ├── LinkForm.tsx              # Form to create links
+│   │   ├── LinksTable.tsx            # Table to display all links
+│   │   ├── Header.tsx                # Navigation header with theme toggle
+│   │   ├── ThemeProvider.tsx         # Theme context provider
+│   │   ├── ThemeToggle.tsx           # Dark/light mode toggle button
+│   │   └── AmbientBackground.tsx     # Animated background
+│   ├── lib/
+│   │   ├── db.ts                     # Database connection pool
+│   │   └── utils.ts                  # Helper functions
+│   └── types/
+│       └── index.ts                  # TypeScript type definitions
+├── database/
+│   └── schema.sql                    # Database schema
+├── docs/
+│   ├── Context.md                    # Project requirements
+│   ├── Development-Guide.md          # This file
+│   └── Workflow.md                   # Implementation workflow
+├── .env.local                        # Local environment variables
+├── .env.example                      # Example environment variables
 ├── .gitignore
-├── next.config.js
+├── next.config.ts
 ├── package.json
+├── tsconfig.json                     # TypeScript configuration
 ├── README.md
-└── tailwind.config.js
+└── postcss.config.mjs                # PostCSS config for Tailwind
 ```
 
 ---
 
 ## Database Connection
 
-### lib/db.js
+### src/lib/db.ts
 
-```javascript
+```typescript
 import { Pool } from 'pg';
 
 const pool = new Pool({
@@ -130,7 +141,7 @@ const pool = new Pool({
   // Connection pool settings
   max: 20,
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
+  connectionTimeoutMillis: 10000,
 });
 
 // Test connection on startup
@@ -150,15 +161,10 @@ export default pool;
 
 ## Utility Functions
 
-### lib/utils.js
+### src/lib/utils.ts
 
-```javascript
-/**
- * Generate a random alphanumeric code
- * @param {number} length - Length of code (default: 6)
- * @returns {string} Random code
- */
-export function generateRandomCode(length = 6) {
+```typescript
+export function generateRandomCode(length: number = 6): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let code = '';
   for (let i = 0; i < length; i++) {
@@ -167,22 +173,12 @@ export function generateRandomCode(length = 6) {
   return code;
 }
 
-/**
- * Validate custom code format
- * @param {string} code - Code to validate
- * @returns {boolean} True if valid
- */
-export function validateCode(code) {
+export function validateCode(code: string): boolean {
   const regex = /^[A-Za-z0-9]{6,8}$/;
   return regex.test(code);
 }
 
-/**
- * Validate URL format
- * @param {string} url - URL to validate
- * @returns {boolean} True if valid HTTP/HTTPS URL
- */
-export function validateUrl(url) {
+export function validateUrl(url: string): boolean {
   try {
     const parsed = new URL(url);
     return parsed.protocol === 'http:' || parsed.protocol === 'https:';
@@ -191,24 +187,39 @@ export function validateUrl(url) {
   }
 }
 
-/**
- * Truncate long URLs for display
- * @param {string} url - URL to truncate
- * @param {number} maxLength - Maximum length
- * @returns {string} Truncated URL
- */
-export function truncateUrl(url, maxLength = 50) {
+export function truncateUrl(url: string, maxLength: number = 50): string {
   return url.length > maxLength ? url.substring(0, maxLength) + '...' : url;
 }
 
-/**
- * Format date for display
- * @param {string} dateString - ISO date string
- * @returns {string} Formatted date
- */
-export function formatDate(dateString) {
+export function formatDate(dateString: string | null): string {
   if (!dateString) return 'Never';
   return new Date(dateString).toLocaleString();
+}
+```
+
+### src/types/index.ts
+
+```typescript
+export interface Link {
+  id: number;
+  code: string;
+  url: string;
+  clicks: number;
+  last_clicked: string | null;
+  created_at: string;
+}
+
+export interface CreateLinkRequest {
+  url: string;
+  customCode?: string;
+}
+
+export interface CreateLinkResponse {
+  code: string;
+  url: string;
+  shortUrl: string;
+  clicks: number;
+  createdAt: string;
 }
 ```
 
@@ -257,19 +268,18 @@ export async function GET() {
 
 ### 2. Links API - GET & POST
 
-`app/api/links/route.js`
+`src/app/api/links/route.ts`
 
-```javascript
+```typescript
 import { NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { generateRandomCode, validateCode, validateUrl } from '@/lib/utils';
 
-export async function POST(request) {
+export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { url, customCode } = body;
 
-    // Validate URL
     if (!url || !validateUrl(url)) {
       return NextResponse.json(
         { error: 'Please enter a valid URL' },
@@ -277,11 +287,9 @@ export async function POST(request) {
       );
     }
 
-    // Generate or validate code
     let code = customCode;
     
     if (code) {
-      // Validate custom code
       if (!validateCode(code)) {
         return NextResponse.json(
           { error: 'Code must be 6-8 alphanumeric characters' },
@@ -362,15 +370,18 @@ export async function GET() {
 
 ### 3. Single Link API - GET & DELETE
 
-`app/api/links/[code]/route.js`
+`src/app/api/links/[code]/route.ts`
 
-```javascript
+```typescript
 import { NextResponse } from 'next/server';
 import pool from '@/lib/db';
 
-export async function GET(request, { params }) {
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ code: string }> }
+) {
   try {
-    const { code } = params;
+    const { code } = await params;
     
     const result = await pool.query(
       'SELECT * FROM links WHERE code = $1',
@@ -394,9 +405,12 @@ export async function GET(request, { params }) {
   }
 }
 
-export async function DELETE(request, { params }) {
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ code: string }> }
+) {
   try {
-    const { code } = params;
+    const { code } = await params;
     
     const result = await pool.query(
       'DELETE FROM links WHERE code = $1 RETURNING *',
@@ -425,15 +439,18 @@ export async function DELETE(request, { params }) {
 
 ### 4. Redirect Handler
 
-`app/[code]/route.js`
+`src/app/[code]/route.ts`
 
-```javascript
+```typescript
 import { NextResponse } from 'next/server';
 import pool from '@/lib/db';
 
-export async function GET(request, { params }) {
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ code: string }> }
+) {
   try {
-    const { code } = params;
+    const { code } = await params;
 
     // Use transaction to ensure atomicity
     const client = await pool.connect();
@@ -490,85 +507,86 @@ export async function GET(request, { params }) {
 
 ### Tailwind Configuration
 
-Update `tailwind.config.js`:
-
-```javascript
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-  darkMode: 'class',
-  content: [
-    './pages/**/*.{js,jsx}',
-    './components/**/*.{js,jsx}',
-    './app/**/*.{js,jsx}',
-  ],
-  theme: {
-    extend: {
-      colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-        primary: {
-          DEFAULT: "#2563EB",
-          foreground: "#FFFFFF",
-        },
-        glass: {
-          border: "var(--glass-border)",
-          surface: "var(--glass-surface)",
-        }
-      },
-      animation: {
-        'blob': 'blob 10s infinite',
-      },
-      keyframes: {
-        blob: {
-          '0%': { transform: 'translate(0px, 0px) scale(1)' },
-          '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
-          '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
-          '100%': { transform: 'translate(0px, 0px) scale(1)' },
-        },
-      },
-    },
-  },
-  plugins: [],
-}
-```
+**Note:** This project uses Tailwind CSS v4 with the new `@import "tailwindcss"` syntax. Configuration is done via CSS custom properties in `globals.css` rather than a traditional config file.
 
 ### Global Styles
 
-Update `app/globals.css`:
+`src/app/globals.css` uses Tailwind CSS v4 with custom properties for theming:
 
 ```css
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-@layer base {
-  :root {
-    --background: #f4f4f5;
-    --foreground: #18181b;
-    --glass-border: rgba(255, 255, 255, 0.5);
-    --glass-surface: rgba(255, 255, 255, 0.7);
-  }
-
-  .dark {
-    --background: #09090b;
-    --foreground: #f4f4f5;
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --glass-surface: rgba(24, 24, 27, 0.6);
-  }
+:root {
+  --background: #fafafa;
+  --foreground: #171717;
+  --border: #e5e5e5;
+  --card: #ffffff;
+  --card-hover: #f5f5f5;
+  --accent: #0a0a0a;
+  --accent-hover: #262626;
+  --muted: #737373;
+  --subtle: #a3a3a3;
+  
+  /* Gradient colors */
+  --gradient-from: #6366f1;
+  --gradient-via: #8b5cf6;
+  --gradient-to: #d946ef;
+  --gradient-subtle: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 50%, rgba(217, 70, 239, 0.05) 100%);
+  --gradient-accent: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
 }
 
-@layer utilities {
-  .glass-panel {
-    @apply backdrop-blur-xl bg-[var(--glass-surface)] border border-[var(--glass-border)] shadow-lg;
-  }
+.dark {
+  --background: #0a0a0a;
+  --foreground: #fafafa;
+  --border: #262626;
+  --card: #171717;
+  --card-hover: #1c1c1c;
+  --accent: #fafafa;
+  --accent-hover: #e5e5e5;
+  --muted: #a3a3a3;
+  --subtle: #737373;
   
-  .glass-subtle {
-    @apply backdrop-blur-md bg-[var(--glass-surface)]/50 border border-[var(--glass-border)]/50;
-  }
+  /* Gradient colors - darker, more subtle */
+  --gradient-from: #4f46e5;
+  --gradient-via: #7c3aed;
+  --gradient-to: #c026d3;
+  --gradient-subtle: linear-gradient(135deg, rgba(79, 70, 229, 0.08) 0%, rgba(124, 58, 237, 0.08) 50%, rgba(192, 38, 211, 0.08) 100%);
+  --gradient-accent: linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(124, 58, 237, 0.15) 100%);
 }
 
 body {
-  @apply bg-background text-foreground transition-colors duration-300 antialiased;
+  background: var(--background);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.03) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.03) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(217, 70, 239, 0.03) 0px, transparent 50%);
+  color: var(--foreground);
+  transition: color 200ms ease, background-color 200ms ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.011em;
+}
+
+.card {
+  background: var(--card);
+  background-image: var(--gradient-subtle);
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+  transition: all 200ms ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+  color: var(--background);
+  border: 1px solid var(--accent);
+  transition: all 150ms ease;
+}
+
+.input-field {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  transition: all 150ms ease;
 }
 ```
 
@@ -578,16 +596,36 @@ body {
 
 ### 1. Theme Provider
 
-`components/ThemeProvider.js`
+`src/components/ThemeProvider.tsx`
 
-```javascript
+```typescript
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
-const ThemeContext = createContext({});
+interface ThemeContextType {
+  theme: string;
+  setTheme: (theme: string) => void;
+}
 
-export function ThemeProvider({ children, attribute = 'class', defaultTheme = 'system', enableSystem = true }) {
+const ThemeContext = createContext<ThemeContextType>({
+  theme: 'system',
+  setTheme: () => {},
+});
+
+interface ThemeProviderProps {
+  children: ReactNode;
+  attribute?: string;
+  defaultTheme?: string;
+  enableSystem?: boolean;
+}
+
+export function ThemeProvider({ 
+  children, 
+  attribute = 'class', 
+  defaultTheme = 'system', 
+  enableSystem = true 
+}: ThemeProviderProps) {
   const [theme, setTheme] = useState(defaultTheme);
 
   useEffect(() => {
@@ -615,9 +653,9 @@ export const useTheme = () => useContext(ThemeContext);
 
 ### 2. Theme Toggle
 
-`components/ThemeToggle.js`
+`src/components/ThemeToggle.tsx`
 
-```javascript
+```typescript
 'use client';
 
 import { useTheme } from './ThemeProvider';
@@ -628,10 +666,19 @@ export function ThemeToggle() {
   return (
     <button
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      className="p-2 rounded-lg glass-subtle hover:bg-zinc-200/50 dark:hover:bg-zinc-700/50 transition"
+      className="p-2 rounded-md border divider hover:bg-gradient-to-br hover:from-[rgba(99,102,241,0.1)] hover:to-[rgba(139,92,246,0.1)] dark:hover:from-[rgba(79,70,229,0.15)] dark:hover:to-[rgba(124,58,237,0.15)] hover:border-[var(--gradient-from)] transition-all hover:shadow-sm hover:scale-105 touch-manipulation"
       aria-label="Toggle theme"
     >
-      {theme === 'dark' ? '🌞' : '🌙'}
+      {theme === 'dark' ? (
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="8" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.5"/>
+          <path d="M8 1V2.5M8 13.5V15M15 8H13.5M2.5 8H1M12.5 12.5L11.5 11.5M4.5 4.5L3.5 3.5M12.5 3.5L11.5 4.5M4.5 11.5L3.5 12.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+        </svg>
+      ) : (
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M14 8.5C13.5 11.5 10.5 14 7 14C3.5 14 1 11.5 1 8C1 4.5 3.5 2 7 2C7.5 2 8 2 8.5 2.5C7 3 6 4.5 6 6.5C6 9 7.5 11 10 11C11.5 11 13 10 13.5 8.5C13.5 8.5 14 8.5 14 8.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      )}
     </button>
   );
 }
@@ -639,9 +686,9 @@ export function ThemeToggle() {
 
 ### 3. Ambient Background
 
-`components/AmbientBackground.js`
+`src/components/AmbientBackground.tsx`
 
-```javascript
+```typescript
 export default function AmbientBackground() {
   return (
     <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
@@ -655,22 +702,22 @@ export default function AmbientBackground() {
 
 ### 4. Header Component
 
-`components/Header.js`
+`src/components/Header.tsx`
 
-```javascript
+```typescript
 import { ThemeToggle } from './ThemeToggle';
 
 export default function Header() {
   return (
-    <nav className="sticky top-4 mx-4 md:mx-auto max-w-7xl z-50 glass-panel rounded-2xl mt-4">
-      <div className="px-6 py-3">
+    <nav className="sticky top-2 sm:top-4 mx-2 sm:mx-4 md:mx-auto max-w-7xl z-50 glass-panel rounded-xl sm:rounded-2xl mt-2 sm:mt-4">
+      <div className="px-3 sm:px-6 py-2.5 sm:py-3">
         <div className="flex items-center justify-between">
-          <a href="/" className="flex items-center gap-3">
-            <span className="text-2xl">🔗</span>
-            <span className="text-xl font-bold tracking-tight">TinyLink</span>
+          <a href="/" className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <span className="text-xl sm:text-2xl flex-shrink-0">🔗</span>
+            <span className="text-lg sm:text-xl font-bold tracking-tight truncate">TinyLink</span>
           </a>
           
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
             <a 
               href="/api/healthz" 
               target="_blank"
@@ -689,9 +736,10 @@ export default function Header() {
 
 ### 5. Root Layout
 
-`app/layout.js`
+`src/app/layout.tsx`
 
-```javascript
+```typescript
+import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import AmbientBackground from '@/components/AmbientBackground';
@@ -700,12 +748,16 @@ import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'TinyLink - URL Shortener',
   description: 'Shorten URLs and track click statistics',
 };
 
-export default function RootLayout({ children }) {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
@@ -724,19 +776,20 @@ export default function RootLayout({ children }) {
 
 ### 6. Dashboard Page
 
-`app/page.js`
+`src/app/page.tsx`
 
-```javascript
+```typescript
 'use client';
 
 import { useState, useEffect } from 'react';
 import LinkForm from '@/components/LinkForm';
 import LinksTable from '@/components/LinksTable';
+import type { Link, CreateLinkResponse } from '@/types';
 
 export default function Dashboard() {
-  const [links, setLinks] = useState([]);
+  const [links, setLinks] = useState<Link[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchLinks = async () => {
     try {
@@ -762,37 +815,40 @@ export default function Dashboard() {
     fetchLinks();
   }, []);
 
-  const handleLinkCreated = (newLink) => {
-    setLinks([newLink, ...links]);
+  const handleLinkCreated = (newLink: CreateLinkResponse) => {
+    fetchLinks();
   };
 
-  const handleLinkDeleted = (code) => {
+  const handleLinkDeleted = (code: string) => {
     setLinks(links.filter(link => link.code !== code));
   };
 
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">
-          URL Shortener Dashboard
+    <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+      <div className="mb-8 sm:mb-12">
+        <h1 className="text-3xl sm:text-4xl font-semibold mb-2 tracking-tight bg-gradient-to-r from-[var(--foreground)] via-[var(--gradient-from)] to-[var(--foreground)] bg-clip-text">
+          Dashboard
         </h1>
-        <p className="text-zinc-600 dark:text-zinc-400">
-          Create short links and track their performance
+        <p className="text-sm sm:text-base text-muted">
+          Create and manage your short links
         </p>
       </div>
 
       <LinkForm onLinkCreated={handleLinkCreated} />
 
       {error && (
-        <div className="mt-6 p-4 glass-panel rounded-lg border-red-500/50">
-          <p className="text-red-600 dark:text-red-400">{error}</p>
+        <div className="mt-6 p-4 card rounded-lg border-red-600 animate-fadeIn">
+          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
         </div>
       )}
 
       {loading ? (
-        <div className="mt-8 flex flex-col items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <p className="mt-4 text-zinc-600 dark:text-zinc-400">Loading links...</p>
+        <div className="mt-8 flex flex-col items-center justify-center py-16">
+          <div className="relative">
+            <div className="animate-spin rounded-full h-8 w-8 border-2 border-[var(--border)] border-t-[var(--gradient-from)]"></div>
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[var(--gradient-from)] to-[var(--gradient-to)] opacity-20 blur-md"></div>
+          </div>
+          <p className="mt-4 text-sm text-muted">Loading links...</p>
         </div>
       ) : (
         <LinksTable 

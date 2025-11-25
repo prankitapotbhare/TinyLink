@@ -15,12 +15,15 @@ Build a URL shortener web application similar to bit.ly that allows users to sho
 ## Technology Stack
 
 ### Framework
-- **Next.js 14+** (Full-stack with App Router)
+- **Next.js 16** (Full-stack with App Router)
+- **TypeScript** (Type safety and better DX)
+- **React 19** (Latest features)
 
 ### Styling
-- **Tailwind CSS** (Utility-first CSS framework)
-- **Glassmorphism Design** (Premium frosted glass aesthetic)
+- **Tailwind CSS v4** (New @import syntax)
+- **Modern Design System** (CSS custom properties)
 - **Dark Mode Support** (System-aware theme switching)
+- **Gradient Accents** (Indigo/Purple/Pink palette)
 
 ### Database
 - **PostgreSQL** via **Neon** (Free tier, serverless)
@@ -232,16 +235,18 @@ CREATE INDEX idx_created_at ON links(created_at DESC);
 - Touch-friendly buttons (min 44px)
 
 ### Polish
-- Glass panel components with backdrop blur
+- Card components with subtle gradient overlays
 - Consistent button styles with transitions
 - Uniform spacing and margins
-- Zinc-based professional color scheme
-- Animated gradient backgrounds
-- Loading indicators
+- Professional color scheme with gradient accents
+- Subtle animated backgrounds
+- Loading indicators with gradient effects
 - Hover states for interactive elements
 - Focus states for accessibility
 - Smooth theme transitions
 - Dark mode optimized colors
+- Touch-friendly interactions (44px minimum)
+- SVG icons for theme toggle
 
 ---
 

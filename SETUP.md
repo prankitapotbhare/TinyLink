@@ -6,7 +6,7 @@
 
 1. Go to https://neon.tech and sign up
 2. Create a new project named "tinylink"
-3. In the SQL Editor, run the contents of `schema.sql`
+3. In the SQL Editor, run the contents of `database/schema.sql`
 4. Copy your connection string
 
 ### 2. Environment Configuration

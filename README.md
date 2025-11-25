@@ -7,18 +7,21 @@ A modern, production-ready URL shortener built with Next.js 14, PostgreSQL, and 
 - 🔗 Create short links with custom or random codes
 - 📊 Track click statistics in real-time
 - 📈 View detailed analytics per link
-- 🎨 Beautiful glassmorphism UI with dark mode
-- 📱 Fully responsive design
-- ⚡ Fast redirects with PostgreSQL
+- 🎨 Modern gradient-accented UI with dark mode
+- 📱 Fully responsive design (mobile-first)
+- ⚡ Fast redirects with PostgreSQL transactions
 - 🔒 Input validation and error handling
 - 🎯 TypeScript for type safety
+- ♿ Accessibility compliant
+- 🎭 Smooth animations and transitions
 
 ## 🛠 Tech Stack
 
-- **Framework:** Next.js 14 (App Router)
+- **Framework:** Next.js 16 (App Router)
+- **Language:** TypeScript 5
 - **Database:** PostgreSQL (Neon)
-- **Styling:** Tailwind CSS
-- **Language:** TypeScript
+- **Styling:** Tailwind CSS v4
+- **Runtime:** React 19
 - **Hosting:** Vercel
 
 ## 🚀 Local Setup
@@ -44,7 +47,7 @@ npm install
 3. **Set up database:**
    - Create a free account at [Neon](https://neon.tech)
    - Create a new project
-   - Run the SQL from `schema.sql` in Neon's SQL Editor
+   - Run the SQL from `database/schema.sql` in Neon's SQL Editor
 
 4. **Configure environment variables:**
 ```bash
@@ -91,14 +94,22 @@ curl -X POST http://localhost:3000/api/links \
 tinylink/
 ├── src/
 │   ├── app/
-│   │   ├── [code]/          # Redirect handler
+│   │   ├── [code]/
+│   │   │   └── route.ts         # Redirect handler
 │   │   ├── api/
-│   │   │   ├── healthz/     # Health check
-│   │   │   └── links/       # Links API
-│   │   ├── code/[code]/     # Stats page
-│   │   ├── layout.tsx       # Root layout
-│   │   ├── page.tsx         # Dashboard
-│   │   └── globals.css      # Global styles
+│   │   │   ├── healthz/
+│   │   │   │   └── route.ts     # Health check
+│   │   │   └── links/
+│   │   │       ├── route.ts     # Create/list links
+│   │   │       └── [code]/
+│   │   │           └── route.ts # Get/delete link
+│   │   ├── code/
+│   │   │   └── [code]/
+│   │   │       └── page.tsx     # Stats page
+│   │   ├── layout.tsx           # Root layout
+│   │   ├── page.tsx             # Dashboard
+│   │   ├── globals.css          # Global styles
+│   │   └── favicon.ico
 │   ├── components/
 │   │   ├── AmbientBackground.tsx
 │   │   ├── Header.tsx
@@ -107,13 +118,20 @@ tinylink/
 │   │   ├── ThemeProvider.tsx
 │   │   └── ThemeToggle.tsx
 │   ├── lib/
-│   │   ├── db.ts           # Database connection
-│   │   └── utils.ts        # Helper functions
+│   │   ├── db.ts                # Database connection
+│   │   └── utils.ts             # Helper functions
 │   └── types/
-│       └── index.ts        # TypeScript types
-├── docs/                   # Documentation
-├── schema.sql     # Database setup
-└── .env.example           # Environment template
+│       └── index.ts             # TypeScript types
+├── database/
+│   └── schema.sql               # Database schema
+├── docs/                        # Documentation
+│   ├── Context.md
+│   ├── Development-Guide.md
+│   └── Workflow.md
+├── .env.example                 # Environment template
+├── package.json
+├── tsconfig.json
+└── next.config.ts
 ```
 
 ## 🚢 Deployment

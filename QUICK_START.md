@@ -8,7 +8,7 @@
 2. Sign up (free)
 3. Create project "tinylink"
 4. Open SQL Editor
-5. Copy and paste from `schema.sql`
+5. Copy and paste from `database/schema.sql`
 6. Run the SQL
 7. Copy your connection string
 
@@ -118,8 +118,9 @@ git push
 
 - `README.md` - Full documentation
 - `SETUP.md` - Detailed setup guide
-- `PROJECT_STRUCTURE.md` - Architecture
-- `IMPLEMENTATION_SUMMARY.md` - Technical details
+- `docs/Context.md` - Project requirements
+- `docs/Development-Guide.md` - Implementation guide
+- `docs/Workflow.md` - Development workflow
 
 ## 🎨 Customization
 
@@ -127,21 +128,27 @@ git push
 Edit `src/app/globals.css`:
 ```css
 :root {
-  --background: #f4f4f5;  /* Light background */
-  --foreground: #18181b;  /* Light text */
+  --background: #fafafa;  /* Light background */
+  --foreground: #171717;  /* Light text */
+  --gradient-from: #6366f1;  /* Indigo */
+  --gradient-via: #8b5cf6;   /* Purple */
+  --gradient-to: #d946ef;    /* Pink */
 }
 
 .dark {
-  --background: #09090b;  /* Dark background */
-  --foreground: #f4f4f5;  /* Dark text */
+  --background: #0a0a0a;  /* Dark background */
+  --foreground: #fafafa;  /* Dark text */
+  --gradient-from: #4f46e5;  /* Darker indigo */
+  --gradient-via: #7c3aed;   /* Darker purple */
+  --gradient-to: #c026d3;    /* Darker pink */
 }
 ```
 
 ### Change Branding
 Edit `src/components/Header.tsx`:
 ```tsx
-<span className="text-2xl">🔗</span>  {/* Change emoji */}
-<span className="text-xl font-bold">TinyLink</span>  {/* Change name */}
+<span className="text-xl sm:text-2xl">🔗</span>  {/* Change emoji */}
+<span className="text-lg sm:text-xl font-bold">TinyLink</span>  {/* Change name */}
 ```
 
 ## 🎯 Next Steps
