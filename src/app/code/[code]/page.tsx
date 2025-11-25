@@ -47,7 +47,7 @@ export default function StatsPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
-        <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-2 border-[var(--border)] border-t-[var(--accent)]"></div>
       </div>
     );
   }
@@ -56,11 +56,11 @@ export default function StatsPage() {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="text-center">
-          <h1 className="text-3xl sm:text-4xl font-bold mb-3 sm:mb-4">404</h1>
-          <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 mb-4 sm:mb-6">{error || 'Link not found'}</p>
+          <h1 className="text-4xl font-semibold mb-3">404</h1>
+          <p className="text-sm text-muted mb-6">{error || 'Link not found'}</p>
           <Link 
             href="/"
-            className="text-sm sm:text-base text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
+            className="text-sm link-accent"
           >
             ← Back to Dashboard
           </Link>
@@ -72,29 +72,29 @@ export default function StatsPage() {
   const shortUrl = `${process.env.NEXT_PUBLIC_BASE_URL || window.location.origin}/${code}`;
 
   return (
-    <main className="max-w-4xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8 pb-8 sm:pb-12">
+    <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
       <Link 
         href="/"
-        className="text-sm sm:text-base text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium mb-4 sm:mb-6 inline-block"
+        className="text-sm link-accent mb-8 inline-block"
       >
         ← Back to Dashboard
       </Link>
 
-      <div className="glass-panel rounded-lg sm:rounded-xl p-4 sm:p-6 mb-4 sm:mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">
+      <div className="card rounded-lg p-6 sm:p-8 mb-6">
+        <h1 className="text-2xl font-semibold mb-6">
           Link Statistics
         </h1>
 
-        <div className="space-y-3 sm:space-y-4">
+        <div className="space-y-5">
           <div>
-            <label className="text-xs sm:text-sm font-medium text-zinc-500 dark:text-zinc-400">Short URL</label>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mt-1.5">
-              <code className="flex-1 px-3 py-2 text-xs sm:text-sm glass-subtle rounded border text-blue-600 dark:text-blue-400 break-all">
+            <label className="text-sm font-medium mb-2 block">Short URL</label>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+              <code className="flex-1 px-3 py-2 text-sm input-field rounded-md font-mono break-all">
                 {shortUrl}
               </code>
               <button
                 onClick={handleCopy}
-                className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition touch-manipulation whitespace-nowrap"
+                className="px-4 py-2 text-sm font-medium btn-secondary rounded-md touch-manipulation whitespace-nowrap"
               >
                 {copied ? '✓ Copied' : 'Copy'}
               </button>
@@ -102,12 +102,12 @@ export default function StatsPage() {
           </div>
 
           <div>
-            <label className="text-xs sm:text-sm font-medium text-zinc-500 dark:text-zinc-400">Original URL</label>
+            <label className="text-sm font-medium mb-2 block">Original URL</label>
             <a
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="block mt-1.5 px-3 py-2 text-xs sm:text-sm glass-subtle rounded border text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 break-all"
+              className="block px-3 py-2 text-sm input-field rounded-md link-accent break-all"
             >
               {link.url}
             </a>
@@ -115,26 +115,26 @@ export default function StatsPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
-        <div className="glass-panel rounded-lg sm:rounded-xl p-4 sm:p-6">
-          <div className="text-2xl sm:text-3xl font-bold text-blue-600 dark:text-blue-400 mb-1 sm:mb-2">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="card rounded-lg p-6">
+          <div className="text-3xl font-semibold mb-2">
             {link.clicks}
           </div>
-          <div className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400">Total Clicks</div>
+          <div className="text-sm text-muted">Total Clicks</div>
         </div>
 
-        <div className="glass-panel rounded-lg sm:rounded-xl p-4 sm:p-6">
-          <div className="text-sm sm:text-lg font-semibold mb-1 sm:mb-2 break-words">
+        <div className="card rounded-lg p-6">
+          <div className="text-base font-medium mb-2 break-words">
             {formatDate(link.created_at)}
           </div>
-          <div className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400">Created</div>
+          <div className="text-sm text-muted">Created</div>
         </div>
 
-        <div className="glass-panel rounded-lg sm:rounded-xl p-4 sm:p-6">
-          <div className="text-sm sm:text-lg font-semibold mb-1 sm:mb-2 break-words">
+        <div className="card rounded-lg p-6">
+          <div className="text-base font-medium mb-2 break-words">
             {formatDate(link.last_clicked)}
           </div>
-          <div className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400">Last Clicked</div>
+          <div className="text-sm text-muted">Last Clicked</div>
         </div>
       </div>
     </main>

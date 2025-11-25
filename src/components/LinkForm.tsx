@@ -47,13 +47,13 @@ export default function LinkForm({ onLinkCreated }: LinkFormProps) {
   };
 
   return (
-    <div className="glass-panel rounded-lg sm:rounded-xl p-4 sm:p-6 mb-6 sm:mb-8">
-      <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Create Short Link</h2>
+    <div className="card rounded-lg p-6 sm:p-8 mb-8">
+      <h2 className="text-lg font-semibold mb-6">Create Short Link</h2>
       
-      <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label htmlFor="url" className="block text-xs sm:text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">
-            Original URL *
+          <label htmlFor="url" className="block text-sm font-medium mb-2">
+            Original URL
           </label>
           <input
             id="url"
@@ -62,36 +62,36 @@ export default function LinkForm({ onLinkCreated }: LinkFormProps) {
             onChange={(e) => setUrl(e.target.value)}
             placeholder="https://example.com/very/long/url"
             required
-            className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base glass-subtle rounded-lg border focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+            className="w-full px-4 py-2.5 text-sm input-field rounded-md"
           />
         </div>
 
         <div>
-          <label htmlFor="customCode" className="block text-xs sm:text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">
-            Custom Code (optional)
+          <label htmlFor="customCode" className="block text-sm font-medium mb-2">
+            Custom Code <span className="text-subtle font-normal">(optional)</span>
           </label>
           <input
             id="customCode"
             type="text"
             value={customCode}
             onChange={(e) => setCustomCode(e.target.value)}
-            placeholder="mycode (6-8 characters)"
+            placeholder="mycode"
             pattern="[A-Za-z0-9]{6,8}"
-            className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base glass-subtle rounded-lg border focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+            className="w-full px-4 py-2.5 text-sm input-field rounded-md"
           />
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1.5">
-            Leave empty for random code
+          <p className="text-xs text-subtle mt-2">
+            6-8 characters, leave empty for random code
           </p>
         </div>
 
         {error && (
-          <div className="p-2.5 sm:p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-xs sm:text-sm">
+          <div className="p-3 rounded-md bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 text-sm animate-fadeIn">
             {error}
           </div>
         )}
 
         {success && (
-          <div className="p-2.5 sm:p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-600 dark:text-green-400 text-xs sm:text-sm">
+          <div className="p-3 rounded-md bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900 text-green-600 dark:text-green-400 text-sm animate-fadeIn">
             ✓ {success}
           </div>
         )}
@@ -99,15 +99,15 @@ export default function LinkForm({ onLinkCreated }: LinkFormProps) {
         <button
           type="submit"
           disabled={loading}
-          className="w-full px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 active:bg-blue-800 disabled:bg-zinc-400 disabled:cursor-not-allowed transition flex items-center justify-center gap-2 touch-manipulation"
+          className="w-full px-6 py-2.5 text-sm font-medium btn-primary rounded-md disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2 touch-manipulation"
         >
           {loading ? (
             <>
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              <div className="animate-spin rounded-full h-4 w-4 border-2 border-[var(--background)] border-t-transparent"></div>
               Creating...
             </>
           ) : (
-            'Create Short Link'
+            'Create Link'
           )}
         </button>
       </form>

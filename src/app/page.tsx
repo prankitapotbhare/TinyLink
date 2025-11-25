@@ -43,28 +43,28 @@ export default function Dashboard() {
   };
 
   return (
-    <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8 pb-8 sm:pb-12">
-      <div className="mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">
-          URL Shortener Dashboard
+    <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+      <div className="mb-8 sm:mb-12">
+        <h1 className="text-3xl sm:text-4xl font-semibold mb-2 tracking-tight">
+          Dashboard
         </h1>
-        <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400">
-          Create short links and track their performance
+        <p className="text-sm sm:text-base text-muted">
+          Create and manage your short links
         </p>
       </div>
 
       <LinkForm onLinkCreated={handleLinkCreated} />
 
       {error && (
-        <div className="mt-4 sm:mt-6 p-3 sm:p-4 glass-panel rounded-lg border-red-500/50">
-          <p className="text-sm sm:text-base text-red-600 dark:text-red-400">{error}</p>
+        <div className="mt-6 p-4 card rounded-lg border-red-600 animate-fadeIn">
+          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
         </div>
       )}
 
       {loading ? (
-        <div className="mt-6 sm:mt-8 flex flex-col items-center justify-center py-8 sm:py-12">
-          <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-b-2 border-blue-600"></div>
-          <p className="mt-4 text-sm sm:text-base text-zinc-600 dark:text-zinc-400">Loading links...</p>
+        <div className="mt-8 flex flex-col items-center justify-center py-16">
+          <div className="animate-spin rounded-full h-8 w-8 border-2 border-[var(--border)] border-t-[var(--accent)]"></div>
+          <p className="mt-4 text-sm text-muted">Loading links...</p>
         </div>
       ) : (
         <LinksTable 
