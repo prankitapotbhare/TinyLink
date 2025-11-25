@@ -47,8 +47,8 @@ export default function LinkForm({ onLinkCreated }: LinkFormProps) {
   };
 
   return (
-    <div className="card rounded-lg p-6 sm:p-8 mb-8">
-      <h2 className="text-lg font-semibold mb-6">Create Short Link</h2>
+    <div className="card card-gradient rounded-lg p-6 sm:p-8 mb-8 relative overflow-hidden">
+      <h2 className="text-lg font-semibold mb-6 bg-gradient-to-r from-[var(--foreground)] via-[var(--gradient-from)] to-[var(--foreground)] bg-clip-text">Create Short Link</h2>
       
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
@@ -85,13 +85,13 @@ export default function LinkForm({ onLinkCreated }: LinkFormProps) {
         </div>
 
         {error && (
-          <div className="p-3 rounded-md bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 text-sm animate-fadeIn">
+          <div className="p-3 rounded-md bg-gradient-to-br from-red-50 to-red-100/50 dark:from-red-950/30 dark:to-red-900/20 border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 text-sm animate-fadeIn shadow-sm">
             {error}
           </div>
         )}
 
         {success && (
-          <div className="p-3 rounded-md bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900 text-green-600 dark:text-green-400 text-sm animate-fadeIn">
+          <div className="p-3 rounded-md bg-gradient-to-br from-green-50 to-emerald-100/50 dark:from-green-950/30 dark:to-emerald-900/20 border border-green-200 dark:border-green-900 text-green-600 dark:text-green-400 text-sm animate-fadeIn shadow-sm">
             ✓ {success}
           </div>
         )}

@@ -45,7 +45,7 @@ export default function Dashboard() {
   return (
     <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
       <div className="mb-8 sm:mb-12">
-        <h1 className="text-3xl sm:text-4xl font-semibold mb-2 tracking-tight">
+        <h1 className="text-3xl sm:text-4xl font-semibold mb-2 tracking-tight bg-gradient-to-r from-[var(--foreground)] via-[var(--gradient-from)] to-[var(--foreground)] bg-clip-text">
           Dashboard
         </h1>
         <p className="text-sm sm:text-base text-muted">
@@ -63,7 +63,10 @@ export default function Dashboard() {
 
       {loading ? (
         <div className="mt-8 flex flex-col items-center justify-center py-16">
-          <div className="animate-spin rounded-full h-8 w-8 border-2 border-[var(--border)] border-t-[var(--accent)]"></div>
+          <div className="relative">
+            <div className="animate-spin rounded-full h-8 w-8 border-2 border-[var(--border)] border-t-[var(--gradient-from)]"></div>
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[var(--gradient-from)] to-[var(--gradient-to)] opacity-20 blur-md"></div>
+          </div>
           <p className="mt-4 text-sm text-muted">Loading links...</p>
         </div>
       ) : (

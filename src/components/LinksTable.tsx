@@ -44,14 +44,17 @@ export default function LinksTable({ links, onLinkDeleted, onRefresh }: LinksTab
 
   if (links.length === 0) {
     return (
-      <div className="card rounded-lg p-12 sm:p-16 text-center">
-        <svg className="mx-auto mb-4 text-muted" width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M10 13L14 11M10 11L14 13M19 7C19 8.65685 17.6569 10 16 10C15.5 10 15 9.85 14.6 9.6L9.4 12.4C9.45 12.6 9.5 12.8 9.5 13C9.5 13.2 9.45 13.4 9.4 13.6L14.6 16.4C15 16.15 15.5 16 16 16C17.6569 16 19 17.3431 19 19C19 20.6569 17.6569 22 16 22C14.3431 22 13 20.6569 13 19C13 18.8 13.05 18.6 13.1 18.4L7.9 15.6C7.5 15.85 7 16 6.5 16C4.84315 16 3.5 14.6569 3.5 13C3.5 11.3431 4.84315 10 6.5 10C7 10 7.5 10.15 7.9 10.4L13.1 7.6C13.05 7.4 13 7.2 13 7C13 5.34315 14.3431 4 16 4C17.6569 4 19 5.34315 19 7Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-        <h3 className="text-lg font-semibold mb-2">No links yet</h3>
-        <p className="text-sm text-muted">
-          Create your first short link above
-        </p>
+      <div className="card card-gradient rounded-lg p-12 sm:p-16 text-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[rgba(99,102,241,0.03)] via-transparent to-[rgba(217,70,239,0.03)] dark:from-[rgba(79,70,229,0.05)] dark:to-[rgba(192,38,211,0.05)] pointer-events-none"></div>
+        <div className="relative">
+          <svg className="mx-auto mb-4 text-muted" width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 13L14 11M10 11L14 13M19 7C19 8.65685 17.6569 10 16 10C15.5 10 15 9.85 14.6 9.6L9.4 12.4C9.45 12.6 9.5 12.8 9.5 13C9.5 13.2 9.45 13.4 9.4 13.6L14.6 16.4C15 16.15 15.5 16 16 16C17.6569 16 19 17.3431 19 19C19 20.6569 17.6569 22 16 22C14.3431 22 13 20.6569 13 19C13 18.8 13.05 18.6 13.1 18.4L7.9 15.6C7.5 15.85 7 16 6.5 16C4.84315 16 3.5 14.6569 3.5 13C3.5 11.3431 4.84315 10 6.5 10C7 10 7.5 10.15 7.9 10.4L13.1 7.6C13.05 7.4 13 7.2 13 7C13 5.34315 14.3431 4 16 4C17.6569 4 19 5.34315 19 7Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          <h3 className="text-lg font-semibold mb-2">No links yet</h3>
+          <p className="text-sm text-muted">
+            Create your first short link above
+          </p>
+        </div>
       </div>
     );
   }
