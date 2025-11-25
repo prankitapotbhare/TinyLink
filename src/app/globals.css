@@ -1,26 +1,63 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f4f4f5;
+  --foreground: #18181b;
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-surface: rgba(255, 255, 255, 0.7);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.dark {
+  --background: #09090b;
+  --foreground: #f4f4f5;
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-surface: rgba(24, 24, 27, 0.6);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+.glass-panel {
+  backdrop-filter: blur(24px);
+  background-color: var(--glass-surface);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+.glass-subtle {
+  backdrop-filter: blur(12px);
+  background-color: color-mix(in srgb, var(--glass-surface) 50%, transparent);
+  border: 1px solid color-mix(in srgb, var(--glass-border) 50%, transparent);
+}
+
+.animate-blob {
+  animation: blob 10s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
   }
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  transition: color 300ms, background-color 300ms;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
