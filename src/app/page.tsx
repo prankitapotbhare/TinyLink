@@ -43,12 +43,12 @@ export default function Dashboard() {
   };
 
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">
+    <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8 pb-8 sm:pb-12">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">
           URL Shortener Dashboard
         </h1>
-        <p className="text-zinc-600 dark:text-zinc-400">
+        <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400">
           Create short links and track their performance
         </p>
       </div>
@@ -56,15 +56,15 @@ export default function Dashboard() {
       <LinkForm onLinkCreated={handleLinkCreated} />
 
       {error && (
-        <div className="mt-6 p-4 glass-panel rounded-lg border-red-500/50">
-          <p className="text-red-600 dark:text-red-400">{error}</p>
+        <div className="mt-4 sm:mt-6 p-3 sm:p-4 glass-panel rounded-lg border-red-500/50">
+          <p className="text-sm sm:text-base text-red-600 dark:text-red-400">{error}</p>
         </div>
       )}
 
       {loading ? (
-        <div className="mt-8 flex flex-col items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <p className="mt-4 text-zinc-600 dark:text-zinc-400">Loading links...</p>
+        <div className="mt-6 sm:mt-8 flex flex-col items-center justify-center py-8 sm:py-12">
+          <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-b-2 border-blue-600"></div>
+          <p className="mt-4 text-sm sm:text-base text-zinc-600 dark:text-zinc-400">Loading links...</p>
         </div>
       ) : (
         <LinksTable 
